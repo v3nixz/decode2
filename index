@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CyberDecode Auto - Desofuscação Recursiva Automática</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Header Bar -->
+  <header class="top-header">
+    <div class="logo-area">
+      <div class="logo-icon">⚡</div>
+      <div class="logo-text">
+        <h1>CyberDecode <span class="logo-badge">Auto-Recursive</span></h1>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <!-- Exemplo rápido -->
+      <select id="sampleSelect" class="select-samples">
+        <option value="" disabled selected>📂 Carregar Exemplo de Teste...</option>
+      </select>
+
+      <!-- Grande Diferencial: Botão Auto Deobfuscate -->
+      <button id="btnAutoDeobfuscate" class="btn btn-primary" title="Analisa e desfaz todas as camadas aninhadas automaticamente">
+        <span>⚡</span> Desofuscar Tudo Automaticamente
+      </button>
+
+      <button id="btnReset" class="btn btn-secondary" title="Limpar tudo">
+        <span>🔄</span> Limpar
+      </button>
+
+      <button id="btnInfo" class="btn btn-ghost" title="Como funciona o Auto-Decode">
+        <span>ℹ️</span> Ajuda
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <div class="app-container">
+    
+    <!-- Operations Catalog Sidebar -->
+    <aside class="sidebar-ops">
+      <div class="sidebar-search">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchOps" placeholder="Filtrar operações manuais..." autocomplete="off">
+        </div>
+      </div>
+
+      <div class="ops-list" id="opsList">
+        <!-- Preenchido via JavaScript -->
+      </div>
+    </aside>
+
+    <!-- Center Workspace -->
+    <main class="workspace">
+      
+      <!-- Left Split: Input -->
+      <section class="pane pane-input">
+        <div class="pane-header">
+          <div class="pane-title">
+            <span>📥</span> Entrada (Código / Payload Ofuscado)
+          </div>
+          <div class="pane-meta">
+            <span id="inputEntropy" class="meta-pill" title="Entropia de Shannon (0 a 8)">Entropia: 0.00</span>
+            <span id="inputSize" class="meta-pill">0 chars</span>
+            <button id="btnPaste" class="btn btn-ghost" style="padding: 2px 6px;" title="Colar da área de transferência">📋 Colar</button>
+            <input type="file" id="fileUpload" style="display: none;">
+            <button id="btnUpload" class="btn btn-ghost" style="padding: 2px 6px;" title="Carregar arquivo">📁 Arquivo</button>
+          </div>
+        </div>
+        <div class="code-area-wrap">
+          <textarea id="inputCode" class="code-textarea" placeholder="Cole aqui seu código, payload ofuscado, comando PowerShell, Base64, Hex, URL-encoded ou arquivo...&#10;&#10;Dica: Se houver ofuscações dentro de outras (ex: Base64 dentro de Hex dentro de URL), basta clicar em '⚡ Desofuscar Tudo Automaticamente' no topo!"></textarea>
+        </div>
+      </section>
+
+      <!-- Right Split: Output -->
+      <section class="pane pane-output">
+        <div class="pane-header">
+          <div class="pane-title">
+            <span id="outputTitleIcon">📤</span> <span id="outputTitleText">Resultado Desofuscado</span>
+          </div>
+          <div class="pane-meta">
+            <span id="outputScore" class="meta-pill" title="Índice de Legibilidade e Clareza">Score: --</span>
+            <span id="outputEntropy" class="meta-pill">Entropia: --</span>
+            <span id="outputSize" class="meta-pill">0 chars</span>
+            <button id="btnBeautify" class="btn btn-ghost" style="padding: 2px 6px;" title="Formatar / Indentar Código">✨ Indentar</button>
+            <button id="btnBake" class="btn btn-ghost" style="padding: 2px 6px;" title="Mover resultado de volta para o Input">↩️ Usar na Entrada</button>
+            <button id="btnCopy" class="btn btn-secondary" style="padding: 2px 8px;" title="Copiar para área de transferência">📋 Copiar</button>
+            <button id="btnDownload" class="btn btn-secondary" style="padding: 2px 8px;" title="Baixar resultado">💾 Baixar</button>
+          </div>
+        </div>
+        <div class="code-area-wrap">
+          <textarea id="outputCode" class="code-textarea" readonly placeholder="O resultado de cada camada ou o código limpo final aparecerá aqui..."></textarea>
+        </div>
+      </section>
+
+      <!-- Bottom Pipeline Drawer: Deobfuscation Stepper (O Diferencial visual) -->
+      <section class="pipeline-drawer">
+        <div class="pipeline-header">
+          <div>
+            <span>🧭 Linha do Tempo de Camadas</span> 
+            <span id="layerCountBadge" class="meta-pill" style="margin-left: 8px;">0 camadas detectadas</span>
+          </div>
+          <div style="font-size: 11px; text-transform: none; color: var(--text-dim);">
+            Clique em qualquer nó da linha do tempo para inspecionar o estado exato daquela camada
+          </div>
+        </div>
+        
+        <div class="pipeline-scroll" id="pipelineSteps">
+          <div class="empty-pipeline">
+            <span>⚡ Nenhuma análise executada ainda. Cole seu código e clique em <b>"Desofuscar Tudo Automaticamente"</b> acima.</span>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- Status Bar Footer -->
+  <footer class="status-bar">
+    <div class="status-left">
+      <span id="statusIndicator">🟢 Pronto</span>
+      <span id="statusDetails">Aguardando entrada de dados</span>
+    </div>
+    <div class="status-right">
+      <span>100% Client-Side • Seguro & Offline</span>
+      <span>CyberDecode Auto v1.0</span>
+    </div>
+  </footer>
+
+  <!-- Help / Info Modal -->
+  <div id="infoModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 style="font-size: 16px; font-weight: 700;">Como funciona o CyberDecode Auto?</h2>
+        <button id="btnCloseModal" class="btn btn-ghost">✕</button>
+      </div>
+      <div class="modal-body">
+        <p><b>O Grande Diferencial:</b> Ao contrário do CyberChef tradicional, onde você precisa adivinhar e montar cada bloco manualmente quando há múltiplos níveis de ofuscação aninhados, o <b>CyberDecode Auto</b> possui um motor heurístico recursivo.</p>
+        <br>
+        <p>Ele detecta e desenrola automaticamente até 20 camadas de ofuscações encadeadas, incluindo:</p>
+        <ul style="margin-left: 20px; margin-top: 8px;">
+          <li><b>PowerShell Obfuscation:</b> Comandos <code>-enc</code> (UTF-16LE), backticks (<code>`</code>), operador de formato (<code>-f</code>) e concatenações.</li>
+          <li><b>JavaScript Packers:</b> Dean Edwards (<code>eval(function(p,a,c,k)...)</code>), escapes hexadecimais (<code>\xNN</code>) e <code>String.fromCharCode</code>.</li>
+          <li><b>Multi-Bases & Encodings:</b> Base64, Base32, Hex contínuo ou delimitado, URL percent-encoding, HTML Entities e Unicode escapes.</li>
+          <li><b>Cifras & Cripto leve:</b> ROT13, Cifra de César com quebra automática de chave e quebra automática de XOR com chave de byte único.</li>
+          <li><b>Compressões:</b> Gzip e Zlib/Deflate integrados nativamente no navegador.</li>
+        </ul>
+        <br>
+        <p>Você pode clicar em cada etapa do pipeline na barra inferior para auditar e inspecionar exatamente o que mudou de uma camada para outra!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/engine/heuristics.js"></script>
+  <script src="js/engine/decoders.js"></script>
+  <script src="js/engine/beautifier.js"></script>
+  <script src="js/engine/auto-deobfuscator.js"></script>
+  <script src="samples/samples.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
